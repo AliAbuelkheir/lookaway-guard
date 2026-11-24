@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: blob:; media-src 'self' blob: mediastream:">
+  <title>LookAway Guard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>LookAway Guard</h1>
+    <span id="status">Starting camera…</span>
+  </header>
+
+  <main>
+    <section class="camera">
+      <div class="video-wrap">
+        <video id="video" autoplay muted playsinline></video>
+        <div id="flash"></div>
+      </div>
+      <div class="controls">
+        <button id="capture" type="button">Capture <kbd>Enter</kbd></button>
+        <button id="live" type="button" aria-pressed="false">Live mode: off <kbd>L</kbd></button>
+      </div>
+    </section>
+
+    <section class="result" aria-live="polite">
+      <div id="verdict" class="verdict idle">
+        <span class="verdict-label" id="verdict-label">Press Enter to capture</span>
+        <span class="verdict-sub" id="verdict-sub">The photo goes through face detection, then our model</span>
+      </div>
+
+      <div class="meter" aria-hidden="true">
+        <span>away</span>
+        <div class="bar"><div id="bar-fill"></div><div class="bar-mid"></div></div>
+        <span>forward</span>
+      </div>
+
+      <div class="steps">
+        <figure>
+          <canvas id="snapshot" width="640" height="360"></canvas>
+          <figcaption><b>1 · Face detection</b> (YuNet, pretrained) <span id="det-info"></span></figcaption>
+        </figure>
+        <figure class="crop-fig">
+          <canvas id="crop" width="64" height="64"></canvas>
+          <figcaption><b>2 · 64 × 64 crop</b> → <b>3 · ResNet-18</b> (ours) <span id="cls-info"></span></figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# For running the notebooks locally (Google Colab already has everything except gdown, which the notebooks install).
+torch
+torchvision
+numpy
+scikit-learn
+matplotlib
+gdown
+jupyter
+# Only for MS3/export_onnx.py
+onnx
+onnxruntime

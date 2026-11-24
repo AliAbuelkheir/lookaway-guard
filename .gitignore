@@ -1,0 +1,20 @@
+# Python / Jupyter
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+
+# Datasets (downloaded by the notebooks) and trained weights (re-created by the notebooks)
+data/
+*.pt
+MS3/checkpoints/
+
+# Course documents
+docs/
+
+# Electron app
+node_modules/
+app/out/
+
+# Local tooling
+.claude/
+_smoke/
