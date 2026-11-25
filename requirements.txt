@@ -4,6 +4,7 @@ torchvision
 numpy
 scikit-learn
 matplotlib
+pandas
 gdown
 jupyter
 # Only for MS3/export_onnx.py

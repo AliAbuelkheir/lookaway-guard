@@ -18,3 +18,13 @@ app/out/
 # Local tooling
 .claude/
 _smoke/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local assistant notes
+CLAUDE.md
