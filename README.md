@@ -9,11 +9,10 @@ A laptop camera watches the person at the screen. When they look at the screen, 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-ResNet--18-EE4C2C?logo=pytorch&logoColor=white)
 ![ONNX Runtime](https://img.shields.io/badge/ONNX_Runtime-inference-005CED?logo=onnx&logoColor=white)
-![Electron](https://img.shields.io/badge/Electron-desktop_demo-47848F?logo=electron&logoColor=white)
-![Colab](https://img.shields.io/badge/Google_Colab-ready-F9AB00?logo=googlecolab&logoColor=white)
+![Electron](https://img.shields.io/badge/Electron-desktop_app-47848F?logo=electron&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-*DMET 901 Computer Vision · German University in Cairo (GUC)*
+*University project for DMET 901 Computer Vision, German University in Cairo (GUC)*
 
 </div>
 
@@ -41,7 +40,7 @@ flowchart LR
 
 ## Results
 
-Test set, mean ± std over 3 seeds:
+Test set (4 unseen people, 2,029 images), mean ± std over 3 seeds:
 
 | Model | Macro-F1 | Accuracy | Real errors\* |
 |---|---|---|---|
@@ -50,73 +49,68 @@ Test set, mean ± std over 3 seeds:
 
 \* Errors on heads that are clearly forward (< 17.5°) or clearly away (> 22.5°). Errors between 17.5° and 22.5°, right at the 20° line, are counted separately as "accepted".
 
-<p align="center">
-  <img src="MS3/figures/results_bars.png" alt="Milestone 3 results per experiment" width="85%">
-</p>
-
 ### Milestone 3 improvements
 
-Every experiment changes the model or the data. Hyperparameters, the loss and the metrics stay fixed.
+Every experiment changes the model or the training data. The training settings, the loss and the metrics stay the same as in Milestone 2.
 
-| Experiment | What changes | Kept? |
-|---|---|---|
-| **A: Small input** | First conv uses stride 1 and the max-pool is removed, so the network reads the 64 × 64 crop directly instead of a 224 × 224 upscale | ✅ |
-| **B: + 300W-LP** | Adds the 300W-LP face crops (thousands of people) to training. Validation and test stay on the same BIWI people | ✅ |
-| **C: SE attention** | Adds a squeeze-and-excitation block to each residual block | ❌ no gain |
-| **A + B** | Both kept changes together: **final model** | ✅ |
-| A + B + C | All three | ❌ |
+| Experiment | What changes | Test macro-F1 | Kept? |
+|---|---|---|---|
+| Baseline (MS2) | ResNet-18 on the crop enlarged to 224 × 224 | 0.894 ± 0.021 | |
+| **A: Small input** | First conv uses stride 1 and the max-pool is removed, so the network reads the 64 × 64 crop directly | 0.889 ± 0.011 | ✅ |
+| **B: + 300W-LP** | Adds the 300W-LP face crops (thousands of people) to training. Validation and test stay on the same BIWI people | 0.888 ± 0.013 | ✅ |
+| **C: SE attention** | Adds a squeeze-and-excitation block to each residual block | 0.887 ± 0.015 | ❌ |
+| **A + B** | Both together: **final model** | **0.908 ± 0.005** | ✅ |
+| A + B + C | All three | 0.899 ± 0.005 | ❌ |
 
 ## Repository layout
 
 ```
 .
-├── MS1/                          Milestone 1: problem and dataset
-│   ├── ms1_biwi_dataset_check.ipynb
-│   ├── ms1_report.pdf
-│   └── ms1_slides.pptx
-├── MS2/                          Milestone 2: baseline model
-│   ├── ms2_resnet18_biwi.ipynb   training + evaluation notebook
-│   ├── ms2_results.json          saved metrics
-│   ├── make_slides.py            builds the slide deck
-│   ├── figures/                  training curves, confusion matrix, error analysis
-│   └── ms2_slides.pdf / .pptx
-├── MS3/                          Milestone 3: improvements
-│   ├── build_notebook.py         generates ms3_improvements.ipynb
-│   ├── ms3_improvements.ipynb    all experiments (Colab-ready)
-│   ├── ms3_runs.json             cached results of every training run
-│   ├── export_onnx.py            exports the final model for the app
-│   └── figures/
-├── app/                          Electron desktop demo
+├── MS1/                               Milestone 1: problem and dataset
+├── MS2/                               Milestone 2: baseline ResNet-18
+├── MS3/                               Milestone 3: improvements and the final model
+│   ├── ms3_improvements.ipynb         the whole pipeline, from data download to the exported model
+│   ├── ms3_results.json               saved metrics of every experiment
+│   ├── figures/                       plots made by the notebook
+│   ├── screenshots/                   notebook screenshots used in the presentation
+│   └── make_slides.py                 builds MS3_presentation_proposal.pptx
+├── desktop_app/                       LookAway Guard: the Electron app with the live camera
 │   ├── main.js / preload.js / renderer.js / pipeline.js
-│   └── models/                   YuNet + our ResNet-18 (ONNX)
+│   └── models/                        YuNet + our ResNet-18 (ONNX)
+├── MS3_presentation_proposal.pptx     proposed Milestone 3 slides (edit freely)
 └── requirements.txt
 ```
 
-## Getting started
+## Run the Milestone 3 notebook
 
-### Run the notebooks (Google Colab)
+`MS3/ms3_improvements.ipynb` does everything from scratch, in order:
 
-1. Open a notebook from `MS2/` or `MS3/` in [Google Colab](https://colab.research.google.com).
-2. Choose a GPU runtime: *Runtime → Change runtime type → T4 GPU*.
-3. Click *Runtime → Run all*. The datasets download automatically.
+1. downloads BIWI and 300W-LP (about 1.4 GB) and the corrected BIWI angles,
+2. labels and splits the data (12 / 4 / 4 people),
+3. builds the six models (baseline, A, B, C, A + B, A + B + C),
+4. trains each one with 3 seeds and prints the training log,
+5. shows the results, the confusion matrices and where the errors are,
+6. exports the final model to `desktop_app/models/` and checks it gives the same predictions.
 
-### Run the notebooks (locally)
+Locally (a GPU is strongly recommended: all 18 runs take about 1.5 hours on an RTX 4070 laptop GPU, roughly 3–4 hours on a Colab T4):
 
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate    macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-jupyter notebook
+pip install -r requirements.txt       # for a CUDA GPU, install torch from https://pytorch.org first
+jupyter notebook MS3/ms3_improvements.ipynb
 ```
 
-The MS3 notebook reads finished runs from `ms3_runs.json`, so running it again only redraws the results. Delete an entry to train that run again.
+Then click *Run all*. It also works in [Google Colab](https://colab.research.google.com) with a T4 GPU (*Runtime → Change runtime type*), but the saved runs are lost if the Colab session disconnects.
 
-### Run the desktop demo
+Finished runs are saved in `MS3/ms3_runs.json` and trained weights in `MS3/checkpoints/` (neither is in the repo). If the notebook stops, run it again and it continues where it stopped.
 
-Needs [Node.js](https://nodejs.org) 20 or newer. Works on Windows, Linux and macOS on Apple Silicon (M1 or newer). Intel Macs are not supported because ONNX Runtime for Node.js has no Intel Mac build. On macOS, allow camera access for your terminal app when asked.
+## Run the desktop app
+
+Needs [Node.js](https://nodejs.org) 20 or newer. Works on Windows, Linux and macOS on Apple Silicon. The trained model is already included, so you do not need to run the notebook first.
 
 ```bash
-cd app
+cd desktop_app
 npm install
 npm start
 ```
@@ -126,26 +120,15 @@ npm start
 | **Enter** (or the *Capture* button) | Analyse one photo |
 | **L** | Toggle live mode |
 
-The app runs two models:
+How a camera frame becomes a prediction (`desktop_app/pipeline.js`):
 
 1. **YuNet** (OpenCV Zoo, pretrained) finds the face.
 2. The face is cropped the same way as the BIWI training crops (0.4 margin) and resized to 64 × 64.
-3. **Our ResNet-18** (`app/models/head_direction_resnet18.onnx`) says forward or away.
-
-To rebuild the ONNX model from a checkpoint, run `python MS3/export_onnx.py`. You need to train the checkpoint first; trained weights are not in the repo.
-
-## Study guide
-
-If you are preparing for the presentation, read the project in this order:
-
-1. **`MS1/ms1_report.pdf`**: the problem, the dataset and the 20° rule.
-2. **`MS2/ms2_resnet18_biwi.ipynb`**: the data pipeline, the person-level split, the two-stage fine-tuning and the baseline error analysis.
-3. **`MS3/ms3_improvements.ipynb`**: experiments A, B and C, the 3-seed comparison and why A + B is the final model.
-4. **`app/pipeline.js`**: how a camera frame becomes a prediction (detect → crop → resize → classify).
+3. **Our ResNet-18** (`desktop_app/models/head_direction_resnet18.onnx`) says forward or away.
 
 ## Data and credits
 
-- **BIWI Kinect Head Pose**: Fanelli et al., 2013. We use the face crops prepared by [FSA-Net](https://github.com/shamangary/FSA-Net) and the corrected angles from HeadPose+.
+- **BIWI Kinect Head Pose**: Fanelli et al., 2013. We use the face crops prepared by [FSA-Net](https://github.com/shamangary/FSA-Net) and the corrected angles from [HeadPose+](https://github.com/kuhnkeF/headposeplus).
 - **300W-LP**: Zhu et al., 2016. Face crops prepared by FSA-Net.
 - **YuNet** face detector from the [OpenCV Model Zoo](https://github.com/opencv/opencv_zoo).
 

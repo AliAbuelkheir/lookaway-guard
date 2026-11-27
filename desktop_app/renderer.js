@@ -22,7 +22,7 @@ async function startCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
     video.srcObject = stream;
     await video.play();
-    statusEl.textContent = `Camera on · ${video.videoWidth} × ${video.videoHeight}`;
+    statusEl.textContent = `Camera on: ${video.videoWidth} × ${video.videoHeight}`;
   } catch (err) {
     statusEl.textContent = `Camera not available: ${err.message}`;
     captureBtn.disabled = liveBtn.disabled = true;
@@ -59,7 +59,7 @@ function show(result) {
     verdictLabel.textContent = 'No face found';
     verdictSub.textContent = 'Move into the camera view and try again';
     barFill.style.width = '0%';
-    detInfo.textContent = '· no face';
+    detInfo.textContent = ', no face';
     clsInfo.textContent = '';
     cctx.clearRect(0, 0, 64, 64);
     return;
@@ -70,12 +70,12 @@ function show(result) {
   verdict.className = `verdict ${result.label}`;
   verdictLabel.textContent = result.label === 'forward' ? 'FORWARD' : 'AWAY';
   verdictSub.textContent = result.label === 'forward'
-    ? `Looking at the screen · ${pct}% forward`
-    : `Looking away: the screen would be blurred · ${100 - pct}% away`;
+    ? `Looking at the screen (${pct}% forward)`
+    : `Looking away: the screen would be blurred (${100 - pct}% away)`;
   barFill.style.width = `${pct}%`;
   barFill.className = result.label;
-  detInfo.textContent = `· face score ${result.face.score.toFixed(2)}${result.faces > 1 ? ` · ${result.faces} faces, biggest used` : ''}`;
-  clsInfo.textContent = `· P(forward) = ${result.pForward.toFixed(3)} · ${Math.round(result.ms)} ms`;
+  detInfo.textContent = `, face score ${result.face.score.toFixed(2)}${result.faces > 1 ? `, ${result.faces} faces, biggest used` : ''}`;
+  clsInfo.textContent = `, P(forward) = ${result.pForward.toFixed(3)}, ${Math.round(result.ms)} ms`;
 }
 
 async function analyzeOnce() {

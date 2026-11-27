@@ -7,6 +7,6 @@ matplotlib
 pandas
 gdown
 jupyter
-# Only for MS3/export_onnx.py
+# For the ONNX export at the end of the MS3 notebook
 onnx
 onnxruntime

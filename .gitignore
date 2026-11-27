@@ -3,17 +3,18 @@
 __pycache__/
 .ipynb_checkpoints/
 
-# Datasets (downloaded by the notebooks) and trained weights (re-created by the notebooks)
+# Datasets, trained weights and the run cache (all re-created by the notebooks)
 data/
 *.pt
 MS3/checkpoints/
+MS3/ms3_runs.json
 
 # Course documents
 docs/
 
 # Electron app
 node_modules/
-app/out/
+desktop_app/out/
 
 # Local tooling
 .claude/
